@@ -1,0 +1,351 @@
+{
+  "name": "My workflow 3 (Fixed)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -368,
+        80
+      ],
+      "id": "be3624a6-4a05-4630-adbd-d783e980af76",
+      "name": "Webhook",
+      "webhookId": "9b7675ca-55dc-4b41-957d-53929e2ca490"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "a1b2c3d4-0001-0001-0001-000000000001",
+              "leftValue": "={{$json.query[\"hub.mode\"]}}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        80
+      ],
+      "id": "92d03026-6810-43dd-9bb2-a0d1d654a80e",
+      "name": "Is Verification Request?"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{$json.query[\"hub.challenge\"]}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        80,
+        -16
+      ],
+      "id": "d7a480a7-7e04-49f3-b209-4010e34e682e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nconst rawPhone = (body.From || '').replace('whatsapp:', '').trim();\nconst rawMessage = (body.Body || '').trim();\n\nreturn [\n  {\n    json: {\n      phone: rawPhone,\n      message: rawMessage.toLowerCase().includes('hi') ? 'IELTS' : rawMessage\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        176
+      ],
+      "id": "c8712c86-b3af-490a-ae53-f197aec19226",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1YRSQ1bs3DD9yDiVqT2nXrEtM3Gcw-DHp0Rl8CehceWw",
+          "mode": "list",
+          "cachedResultName": "student leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YRSQ1bs3DD9yDiVqT2nXrEtM3Gcw-DHp0Rl8CehceWw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YRSQ1bs3DD9yDiVqT2nXrEtM3Gcw-DHp0Rl8CehceWw/edit#gid=0"
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        176
+      ],
+      "id": "23a2f9dd-8efb-4014-9233-f293e72c65bd",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aUtXSrDEqj8mkMFQ",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fEQXkJLXdTdhTeuDK8kG9Pw6lq1slLjpmuUPohbFx2o",
+          "mode": "list",
+          "cachedResultName": "course data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fEQXkJLXdTdhTeuDK8kG9Pw6lq1slLjpmuUPohbFx2o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "sh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fEQXkJLXdTdhTeuDK8kG9Pw6lq1slLjpmuUPohbFx2o/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Course",
+              "lookupValue": "={{ $(\"Get row(s) in sheet\").first().json.Course }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        528,
+        176
+      ],
+      "id": "d18f2bbf-7e99-4521-85f8-f0dde061c0e0",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aUtXSrDEqj8mkMFQ",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twilio.com/2010-04-01/Accounts/AC56c3e0226ee0dcce7093e97fe6bdd8ce/Messages.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "=whatsapp:{{ $(\"Code in JavaScript\").first().json.phone }}"
+            },
+            {
+              "name": "From",
+              "value": "whatsapp:+14155238886"
+            },
+            {
+              "name": "Body",
+              "value": "={{ $(\"Generate Response\").first().json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1104,
+        176
+      ],
+      "id": "06a89af4-a398-4bb0-8237-38c68ce0645f",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "4ZTQRQ0lAGX2oLWs",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Student said: {{ $(\"Code in JavaScript\").first().json.message }}\n\nName: {{ $(\"Get row(s) in sheet\").first().json.Name }}\nCourse: {{ $(\"Get row(s) in sheet\").first().json.Course }}\n\nCourse Details:\nFee: ₹{{ $(\"Get row(s) in sheet1\").first().json.Fee }}\nDuration: {{ $(\"Get row(s) in sheet1\").first().json.Duration }}\nBatch: {{ $(\"Get row(s) in sheet1\").first().json.Batch }}\n\nReply naturally.",
+        "options": {
+          "systemMessage": "You are a polite and smart admissions counselor. Your job: Help students choose the right course, answer using given course data only, be short, clear, and helpful. Rules: Do NOT make up information. If info is missing, say you will connect to a counselor. Keep responses under 3 lines."
+        }
+      },
+      "id": "54f83bb6-1705-4396-b1b7-1961a09980b1",
+      "name": "Generate Response",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        752,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "3bfa6ef1-7339-4d38-81ab-b0e8f94ebb42",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "6oZhlqJD1j0LlCw0",
+          "name": "OpenAI account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is Verification Request?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Verification Request?": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Generate Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Response": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Response",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ea85a279-5dce-4018-a679-501a8b0b3f17",
+  "meta": {
+    "instanceId": "6a32e0f1fc0eb3c31f3b97e44daa52d3b65b5c6fa33b2f60172eb8cfa790656c"
+  },
+  "id": "OCMdTIPZhps4jz81",
+  "tags": []
+}
